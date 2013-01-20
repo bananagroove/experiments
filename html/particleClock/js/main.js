@@ -1,3 +1,6 @@
+//Original code by nicekumo1
+//http://jsdo.it/nicekumo1
+
 var FPS 			= 60;
 var particleNum 	= 3000;
 var _width 			= 500;
@@ -5,20 +8,30 @@ var _height 		= 500;
 var _textSize		= 40;
 var textPosition	= 0;
 var fontName		= "Visitor1";
+var pixelSize		= 4; //Pow of 2 
+var arrWords		= ["","BANANA", "GROOVE", "STUDIOS", "WE", "LOVE", "CREATIVITY", "TECHNOLOGY", "ART", "CONCEPT", "ELETRONIC", "AUDIO", "VIDEO", "GAMES", "ILLUSTRATION", "DEVELOPMENT", "INSANITY", "COLLABORATION", "FRIENDSHIP", "HAPPINESS", "CHALLENGES", "LAUGHS", "JOKES", "AND", "OBVIOUS", "BEER", ": )", "; )", ": )", ": P"];
 
 var CLOCK_VIEW 	= 0, TEXT_VIEW = 1;
 var nowDisp 	= TEXT_VIEW;
 var particles 	= [];
 var ct 			= document.createElement('canvas');
 var ctx 		= ct.getContext('2d');
+var canvas 		= document.getElementById("canvas");
+var info 		= document.getElementById("info");
+
+//Get Message
+var newMessage = getParameterByName('message');
+if( newMessage != "" ){
+	
+	newMessage = newMessage.split( " " );
+	arrWords = newMessage;
+	
+}
+
 ctx.fillStyle 	= '#fff';
-
-var canvas = document.getElementById("canvas");
-var info = document.getElementById("info");
-
-ct.width  = canvas.width  = _width;
-ct.height = canvas.height = _height;
-canvas.onclick = mouseClick;
+ct.width  		= canvas.width  = _width;
+ct.height 		= canvas.height = _height;
+//canvas.onclick = mouseClick;
 
 var cc = canvas.getContext("2d");
 
@@ -28,7 +41,7 @@ cc.fillRect(0, 0, _width, _height);
 bit = cc.getImageData(0, 0, _width, _height);
 data = bit.data;
 cc.clearRect(0, 0, _width, _height);
-cc.fillStyle = "rgb(0, 255, 0)";
+//cc.fillStyle = "rgb(0, 255, 0)";
 
 var updateState = false;
 var textData;
@@ -39,17 +52,17 @@ var textHeight;
 var setX, setY;
 
 function setPixel(x, y){
-  var idx = ((x|0) + (y|0) * _width)*4;
+  var idx = ((x|0) + (y|0) * _width)*pixelSize;
   data[idx+3] = 255;
 }
 
 function delPixel(x, y){
-  var idx = ((x|0) + (y|0) * _width)*4;
+  var idx = ((x|0) + (y|0) * _width)*pixelSize;
   data[idx+3] = 0;
 }
 
 function faidout(){
-  for (var i = 3, l = data.length;i < l;i+=4){
+  for (var i = 3, l = data.length;i < l;i+=pixelSize){
     var a = data[i];
     if (a !== 0){
       if (a < 36) {
@@ -98,7 +111,7 @@ function process() {
 	    //Text
       
 	      textSize = _textSize;
-	      var score=["","BANANA", "GROOVE", "STUDIOS", "WE", "LOVE", "CREATIVITY", "TECHNOLOGY", "ART", "CONCEPT", "ELETRONIC", "AUDIO", "VIDEO", "GAMES", "ILLUSTRATION", "DEVELOPMENT", "INSANITY", "COLLABORATION", "FRIENDSHIP", "HAPPINESS", "CHALLENGES", "LAUGHS", "JOKES", "AND", "OBVIOUS", "BEER", ": )", "; )", ": )", ": P"];
+	      var score=arrWords;
 	      text=score[textPosition];
 		  textPosition = textPosition < score.length-1 ? textPosition + 1 : 0;
 	      textWidth = textSize * text.length;
@@ -117,19 +130,25 @@ function process() {
 		return;
     textData = ctx.getImageData(setX, setY, textWidth, textHeight).data;
   }
+
   var m, _i = 0;
+	
   for (var x = 0; x < textWidth;x++) {
     for(var y = 0; y < textHeight; y++) {
-      var idx  = (x+y*textWidth)*4;
-      if(textData[idx] > 100) {
-        _i++;
+      var idx  = (x+y*textWidth)*pixelSize;
+      if(textData[idx] > 100){
+        
+		_i++;
         m = particles[_i];
+		
 		if(!m)
 			return;
+			
         //Value from the current position to the target
         var X = x + setX - m.px;
         var Y = y + setY - m.py;
         var T = Math.sqrt(X*X + Y*Y);
+		
         //Angle to the target from the current position
         var A = Math.atan2(Y, X);
         var C = Math.cos(A);
@@ -148,6 +167,7 @@ function process() {
       }
     }
   }
+	
   //The round particles that surplus
   for(var i = _i+1, L = particles.length;i < L;i++) {
     m = particles[i];
@@ -177,7 +197,7 @@ function process() {
 
     //Place the particle
     drawDotLine(m.x, m.y, m.px, m.py);
-  //setPixel(m.x, m.y);
+	//setPixel(m.x, m.y);
 
     m.px = m.x;
     m.py = m.y;
@@ -206,49 +226,85 @@ function particle() {
 
 //Get the current time
 function timeDraw() {
-  var date = new Date();
-  var H = (date.getHours() > 9)? date.getHours() : '0'+date.getHours();
-  var M = (date.getMinutes() > 9)? date.getMinutes() : '0'+date.getMinutes();
-  var S = (date.getSeconds() > 9)? date.getSeconds() : '0'+date.getSeconds();
-  var timeTxt = H+':'+M+':'+S;
-
-  return timeTxt;
+	
+	var date = new Date();
+	var H = (date.getHours() > 9)? date.getHours() : '0'+date.getHours();
+	var M = (date.getMinutes() > 9)? date.getMinutes() : '0'+date.getMinutes();
+	var S = (date.getSeconds() > 9)? date.getSeconds() : '0'+date.getSeconds();
+	var timeTxt = H+':'+M+':'+S;
+	
+	return timeTxt;
+	
 }
 
 //Mouse click event
-function mouseClick() {
-	return;
-  if (nowDisp === CLOCK_VIEW){
-    nowDisp = TEXT_VIEW;
-  } else {
-    nowDisp = CLOCK_VIEW;
-  }
-  updateState = true;
-  return false;
+function mouseClick(){
+	
+	if (nowDisp === CLOCK_VIEW){
+		
+		nowDisp = TEXT_VIEW;
+		
+	} else {
+		
+		nowDisp = CLOCK_VIEW;
+		
+	}
+	
+	updateState = true;
+	
+	return false;
+	
 }
 
 //Draw a line with a dot
-function drawDotLine(x, y, px, py) {
-  var _x = (x > px ? 1 : -1) * (x - px);
-  var _y = (y > py ? 1 : -1) * (y - py);
-  var sx = (x > px) ? -1 : 1;
-  var sy = (y > py) ? -1 : 1;
-  var r, i;
-  if (_x < 3 && _y < 3) return;
-  var l,s;
-  if(_x < _y){
-    l = _y;
-    s = _x;
-    r = s/l;
-    for (i = 0;i < l;i++){
-      setPixel(x + sx*i*r, y+sy*i);
-    }
-  } else {
-    l = _x;
-    s = _y;
-    r = s/l;
-    for (i = 0;i < l;i++){
-      setPixel(x + sx*i, y+sy*i*r);
-    }
-  }
+function drawDotLine(x, y, px, py){
+	
+	var _x = (x > px ? 1 : -1) * (x - px);
+	var _y = (y > py ? 1 : -1) * (y - py);
+	var sx = (x > px) ? -1 : 1;
+	var sy = (y > py) ? -1 : 1;
+	var r, i;
+	
+	if (_x < 3 && _y < 3) return;
+		
+		var l,s;
+		
+		if(_x < _y){
+			
+			l = _y;
+			s = _x;
+			r = s/l;
+			
+			for (i = 0;i < l;i++){
+				
+				setPixel(x + sx*i*r, y+sy*i);
+				
+			}
+		
+		} else {
+			
+			l = _x;
+			s = _y;
+			r = s/l;
+			
+			for (i = 0;i < l;i++){
+				setPixel(x + sx*i, y+sy*i*r);
+			
+		}
+		
+	}
+}
+
+function getParameterByName(name){
+	
+	name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+	var regexS = "[\\?&]" + name + "=([^&#]*)";
+	var regex = new RegExp(regexS);
+	var results = regex.exec(window.location.search);
+	
+	if(results == null)
+		return "";
+	else
+		return decodeURIComponent(results[1].replace(/\+/g, " "));
+	
 }

@@ -41,6 +41,18 @@ footer {
 	
 }
 
+footer a:link, footer a:hover, footer a:visited {
+	
+	color:#555;
+	
+}
+
+footer a:hover {
+	
+	color:#000;
+	
+}
+
 canvas{
 	background: #CCC;
 	margin:20px auto;
