@@ -1,0 +1,54 @@
+@import url("fonts/fontsheet.css");
+
+html, body{
+	margin:0px;
+	padding:0px;
+	background: #CCC;
+	min-height:100%;
+	
+	font-family: 'Visitor1', Arial, Verdana, 'MS Trebuchet', sans-serif;
+	font-size:12px;
+	text-transform:uppercase;
+}
+
+header, footer{
+	text-align:center;
+	margin: 20px auto 0 auto;
+	display: block;
+}
+
+footer {
+	
+	padding:10px;
+	height:20px;
+	background-color:#FCD700;
+	vertical-align:middle;
+	
+}
+
+footer small {
+	
+	height:25px;
+	vertical-align:middle;
+	display:inline-block;
+	
+}
+
+footer {
+	
+	line-height:20px;
+	vertical-align:middle;
+	
+}
+
+canvas{
+	background: #CCC;
+	margin:20px auto;
+	display: block;
+}
+
+#container {
+	
+	height:90%;
+	
+}
